@@ -31,8 +31,9 @@ venv.bak/
 
 # TensorFlow / ML
 *.h5
-*.pkl
-saved_models/
+# Allow model files for deployment
+# *.pkl
+# saved_models/
 visualizations/logs/
 *.ckpt
 *.pb
