@@ -1,4 +1,5 @@
-# Deep Learning
+# Deep Learning (CPU-only for cloud deployment)
+--extra-index-url https://download.pytorch.org/whl/cpu
 torch>=2.0.0
 numpy>=1.24.0
 
