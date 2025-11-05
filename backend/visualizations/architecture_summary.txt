@@ -1,0 +1,35 @@
+======================================================================
+RNN TEXT GENERATOR - MODEL ARCHITECTURE SUMMARY
+======================================================================
+
+LAYER STRUCTURE:
+----------------------------------------------------------------------
+1. Input Layer               (batch_size, seq_len)
+2. Embedding Layer           (3000, 128)
+3. LSTM Layer 1              (256 units)
+4. Dropout (0.2)             Regularization
+5. LSTM Layer 2              (256 units)
+6. Dropout (0.2)             Regularization
+7. Dense Layer               (3000 outputs)
+8. Output (Softmax)          Probability Distribution
+
+======================================================================
+MODEL CONFIGURATION:
+======================================================================
+Vocabulary Size:        3,000 words
+Embedding Dimension:    128
+LSTM Hidden Units:      256
+Number of LSTM Layers:  2
+Dropout Rate:           0.2
+Total Parameters:       2,076,600
+Trainable Parameters:   2,076,600
+
+======================================================================
+TRAINING RESULTS:
+======================================================================
+Training Accuracy:      15.85%
+Validation Accuracy:    11.99%
+Training Perplexity:    76.31
+Validation Perplexity:  345.70
+Epochs Trained:         12 (early stopping)
+======================================================================
