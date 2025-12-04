@@ -1,13 +1,13 @@
 # Build stage
-FROM node:16-alpine as build
+FROM node:16-alpine
 
 WORKDIR /app
 
 # Copy package files
-COPY package.json package-lock.json* ./
+COPY package.json package-lock.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install dependencies (including serve)
+RUN npm ci
 
 # Copy application code
 COPY . .
@@ -15,17 +15,11 @@ COPY . .
 # Build the app
 RUN npm run build
 
-# Production stage with nginx
-FROM nginx:alpine
+# Install serve globally
+RUN npm install -g serve
 
-# Copy build output to nginx
-COPY --from=build /app/build /usr/share/nginx/html
+# Expose port (Railway uses $PORT dynamically)
+EXPOSE 3000
 
-# Copy nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# Expose port
-EXPOSE 80
-
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Start with serve on dynamic port
+CMD serve -s build -l $PORT
