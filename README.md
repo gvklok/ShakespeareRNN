@@ -1,191 +1,293 @@
-# RNN Text Generator
+# Shakespeare RNN Text Generator
 
-A full-stack application for training and generating text using Recurrent Neural Networks (RNN) with LSTM layers.
+A full-stack deep learning application that generates Shakespearean-style text using LSTM (Long Short-Term Memory) neural networks trained on the complete works of William Shakespeare.
 
-**Framework**: This project uses **PyTorch** for deep learning. The model architecture, training loop, and inference are all implemented using PyTorch's flexible and intuitive API.
+## 🚀 Live Demo
 
-## Project Structure
+- **Frontend Application**: https://shakespearernn.onrender.com/
+- **API Backend**: https://shakespearernn-3.onrender.com/
+- **API Documentation (Swagger UI)**: https://shakespearernn-3.onrender.com/docs
 
+## 📖 Project Overview
+
+This project implements a character-level text generation system using Recurrent Neural Networks (RNNs) with LSTM architecture. The model was trained on Shakespeare's complete works to learn the patterns, vocabulary, and stylistic elements of Early Modern English literature.
+
+### Key Features
+
+- **Text Generation**: Generate Shakespeare-style text from any seed phrase
+- **Temperature Control**: Adjust creativity vs coherence (0.5 = conservative, 2.0 = creative)
+- **Training Metrics Visualization**: Interactive charts showing loss and accuracy over epochs
+- **Model Information Dashboard**: View architecture details, parameters, and vocabulary size
+- **REST API**: FastAPI backend with full CORS support
+- **Modern Web Interface**: React + TypeScript frontend with real-time generation
+
+## 🎯 Model Performance
+
+**Final Model Statistics:**
+- **Training Accuracy**: 15.85%
+- **Validation Accuracy**: 11.99%
+- **Validation Perplexity**: 345.70
+- **Vocabulary Size**: ~3,000 unique words
+- **Training Epochs**: 12
+- **Total Parameters**: ~1.5M
+- **Model Size**: 24MB
+
+### Training Configuration
+- **Architecture**: 2-layer LSTM with 256 hidden units
+- **Embedding Dimension**: 100
+- **Dropout Rate**: 0.2
+- **Batch Size**: 64
+- **Learning Rate**: 0.001 with ReduceLROnPlateau scheduler
+- **Training Data**: Complete Works of Shakespeare (~5.4MB text)
+
+## 🔬 Experiments Conducted
+
+### Experiment 1: Vocabulary Size Impact
+Compared models with 3K vs 5K vocabulary sizes:
+- **3K Vocab**: Val Perplexity 345.70 (selected model)
+- **5K Vocab**: Val Perplexity 1129.71 (overfitting)
+- **Conclusion**: Smaller vocabulary generalized better
+
+### Experiment 2: Temperature Analysis
+Generated text at various temperatures to analyze creativity vs coherence:
+- **T=0.5**: Highly repetitive but grammatically correct
+- **T=1.0**: Balanced creativity and coherence
+- **T=1.5**: More creative, occasional errors
+- **T=2.0**: Highly creative but less coherent
+
+See `TEMPERATURE_EXPERIMENT.md` and `MODEL_COMPARISON.md` for detailed findings.
+
+## 🏗️ Architecture
+
+### Backend (Python + PyTorch)
 ```
-rnn-text-generator/
-│
-├── backend/                    # Python FastAPI backend
-│   ├── app/
-│   │   ├── __init__.py
-│   │   ├── main.py            # FastAPI application
-│   │   ├── models.py          # Pydantic models
-│   │   ├── text_generator.py # RNN model class
-│   │   └── train.py           # Training script
-│   ├── data/
-│   │   └── training_text.txt  # Training corpus
-│   ├── saved_models/          # Trained models
-│   ├── visualizations/        # Training plots
-│   └── requirements.txt
-│
-├── frontend/                   # React TypeScript frontend
-│   ├── public/
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── TextGenerator.tsx
-│   │   │   ├── ModelVisualizer.tsx
-│   │   │   └── TrainingMetrics.tsx
-│   │   ├── services/
-│   │   │   └── api.ts
-│   │   ├── App.tsx
-│   │   └── index.tsx
-│   ├── package.json
-│   └── tsconfig.json
-│
-├── docker-compose.yml
-├── .gitignore
-└── README.md
+backend/
+├── app/
+│   ├── main.py              # FastAPI application
+│   ├── text_generator.py    # LSTM model class
+│   ├── train.py             # Training script
+│   └── models.py            # Pydantic schemas
+├── saved_models/            # Trained model files
+├── visualizations/          # Training plots
+└── requirements.txt
 ```
 
-## Features
+### Frontend (React + TypeScript)
+```
+frontend/
+├── src/
+│   ├── components/
+│   │   ├── TextGenerator.tsx       # Text generation interface
+│   │   ├── TrainingMetrics.tsx     # Training charts
+│   │   └── ModelVisualizer.tsx     # Model info display
+│   ├── services/
+│   │   └── api.ts                  # API client
+│   └── App.tsx                     # Main app component
+└── package.json
+```
 
-- **Text Generation**: Generate text based on seed input using trained RNN model
-- **Training Metrics Visualization**: View loss and accuracy charts from training
-- **Model Information**: Display model architecture and parameters
-- **Temperature Control**: Adjust randomness of text generation
-- **REST API**: FastAPI backend with CORS support
-- **Modern UI**: React with TypeScript and Tailwind CSS
+## 🛠️ Technology Stack
 
-## Prerequisites
+### Backend
+- **PyTorch 2.0+** - Deep learning framework
+- **FastAPI** - Modern Python web framework
+- **Uvicorn** - ASGI server
+- **NumPy** - Numerical computations
+- **Matplotlib/Seaborn** - Data visualization
 
-- Python 3.9+
+### Frontend
+- **React 18** - UI library
+- **TypeScript** - Type-safe JavaScript
+- **Axios** - HTTP client
+- **Recharts** - Interactive charts
+- **Tailwind CSS** - Utility-first CSS
+
+### Deployment
+- **Render** - Cloud platform (backend + frontend)
+- **Docker** - Containerization (optional)
+
+## 📋 API Endpoints
+
+### Core Endpoints
+
+**Health Check**
+```
+GET /
+Response: { "status": "ok", "model_status": "loaded", "framework": "PyTorch" }
+```
+
+**Generate Text**
+```
+POST /generate
+Body: {
+  "seed_text": "to be or not to be",
+  "length": 100,
+  "temperature": 1.0
+}
+Response: { "generated_text": "..." }
+```
+
+**Training Metrics**
+```
+GET /metrics
+Response: {
+  "loss": [5.89, 5.41, ...],
+  "accuracy": [0.07, 0.10, ...],
+  "val_loss": [...],
+  "val_accuracy": [...],
+  "epochs": 12
+}
+```
+
+**Model Information**
+```
+GET /model-info
+Response: {
+  "status": "Model loaded",
+  "total_params": 1500000,
+  "vocab_size": 3000,
+  "max_sequence_length": 50
+}
+```
+
+## 🚀 Local Development Setup
+
+### Prerequisites
+- Python 3.11+
 - Node.js 16+
-- npm or yarn
-
-## Setup Instructions
+- Git
 
 ### Backend Setup
 
-1. Navigate to the backend directory:
+1. **Clone the repository**
 ```bash
-cd backend
+git clone https://github.com/gvklok/ShakespeareRNN.git
+cd ShakespeareRNN/backend
 ```
 
-2. Create a virtual environment:
+2. **Create virtual environment**
 ```bash
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate  # Windows: venv\Scripts\activate
 ```
 
-3. Install dependencies:
+3. **Install dependencies**
 ```bash
 pip install -r requirements.txt
 ```
 
-4. Add your training text to `data/training_text.txt`
-
-5. Train the model:
+4. **Run the server**
 ```bash
-python -m app.train
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-6. Run the FastAPI server:
-```bash
-uvicorn app.main:app --reload
-```
-
-The API will be available at `http://localhost:8000`
+API will be available at `http://localhost:8000`
 
 ### Frontend Setup
 
-1. Navigate to the frontend directory:
+1. **Navigate to frontend**
 ```bash
 cd frontend
 ```
 
-2. Install dependencies:
+2. **Install dependencies**
 ```bash
 npm install
 ```
 
-3. Start the development server:
+3. **Start development server**
 ```bash
 npm start
 ```
 
-The frontend will be available at `http://localhost:3000`
+Frontend will open at `http://localhost:3000`
 
-## Using Docker
+## 🎓 Training Your Own Model
 
-Alternatively, you can run the entire application using Docker Compose:
+1. **Prepare training data**
+   - Add your text corpus to `backend/data/training_text.txt`
+   - Minimum 100KB recommended
 
-```bash
-docker-compose up --build
+2. **Configure training parameters** (in `backend/app/train.py`):
+```python
+config = {
+    'embedding_dim': 100,
+    'hidden_dim': 256,
+    'num_layers': 2,
+    'dropout': 0.2,
+    'batch_size': 64,
+    'epochs': 12,
+    'learning_rate': 0.001
+}
 ```
 
-This will start both the backend and frontend services.
-
-## API Endpoints
-
-- `GET /` - Health check
-- `POST /generate` - Generate text
-  - Body: `{ "seed_text": string, "length": number, "temperature": number }`
-- `GET /metrics` - Get training metrics
-- `GET /model-info` - Get model information
-
-## Training Your Own Model
-
-1. Prepare your training text corpus and save it to `backend/data/training_text.txt`
-
-2. Modify training parameters in `backend/app/train.py` if needed:
-   - `embedding_dim`: Size of embedding layer (default: 100)
-   - `lstm_units`: Number of LSTM units (default: 150)
-   - `epochs`: Number of training epochs (default: 100)
-   - `batch_size`: Training batch size (default: 128)
-
-3. Run the training script:
+3. **Train the model**
 ```bash
 cd backend
 python -m app.train
 ```
 
-4. Monitor training progress in TensorBoard:
-```bash
-tensorboard --logdir=visualizations/logs
+4. **Monitor training progress**
+   - Training metrics saved to `saved_models/training_history.pkl`
+   - Visualizations generated in `visualizations/`
+
+## 📊 Model Architecture Details
+
+```
+LSTMTextGenerator(
+  (embedding): Embedding(3000, 100, padding_idx=0)
+  (lstm): LSTM(100, 256, num_layers=2, batch_first=True, dropout=0.2)
+  (dropout): Dropout(p=0.2)
+  (fc): Linear(in_features=256, out_features=3000)
+)
 ```
 
-## Technologies Used
+**Total Parameters**: ~1.5 million
+- Embedding: 300K params
+- LSTM layers: ~1M params
+- Fully connected: ~770K params
 
-### Backend
-- **PyTorch 2.1.0** (Deep Learning Framework)
-- FastAPI 0.109.0
-- Uvicorn
-- NumPy
-- Matplotlib/Seaborn for visualization
-- TensorBoard for training visualization
-- tqdm for progress bars
+## 🐳 Docker Deployment
 
-### Frontend
-- React 18
-- TypeScript
-- Axios for API calls
-- Recharts for data visualization
-- Tailwind CSS for styling
+```bash
+# Build and run with Docker Compose
+docker-compose up --build
 
-## Model Architecture
+# Or build individually
+docker build -t shakespeare-backend ./backend
+docker build -t shakespeare-frontend ./frontend
+```
 
-The PyTorch LSTM model consists of:
-1. **Embedding Layer**: Converts word indices to dense vectors
-2. **LSTM Layers**: 2-layer stacked LSTM with configurable hidden dimensions
-3. **Dropout**: Applied between LSTM layers for regularization
-4. **Fully Connected Layer**: Maps LSTM output to vocabulary size
-5. **Softmax**: Applied during prediction for probability distribution
+## 📝 Project Deliverables
 
-Key features:
-- Automatic GPU detection and usage when available
-- Gradient clipping to prevent exploding gradients
-- Learning rate scheduling with ReduceLROnPlateau
-- Early stopping to prevent overfitting
-- Model checkpointing to save best performing model
+- ✅ Trained LSTM model with documented performance
+- ✅ Full-stack web application (deployed)
+- ✅ REST API with comprehensive documentation
+- ✅ Training visualizations and metrics
+- ✅ Experimental analysis (2 experiments)
+- ✅ Generated text samples
+- ✅ Technical documentation
 
-## License
+## 🤝 Contributing
 
-MIT License
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-## Contributing
+## 📄 License
 
-Feel free to submit issues and enhancement requests!
+This project is licensed under the MIT License.
+
+## 👤 Author
+
+**gvklok**
+- GitHub: [@gvklok](https://github.com/gvklok)
+- Project: [ShakespeareRNN](https://github.com/gvklok/ShakespeareRNN)
+
+## 🙏 Acknowledgments
+
+- Training data: Complete Works of William Shakespeare from Project Gutenberg
+- Framework: PyTorch deep learning framework
+- Assignment: CST-435 Recurrent Neural Networks Activity
+
+---
+
+**Note**: This project was developed as part of a machine learning course assignment focusing on RNN text generation and full-stack ML application development.

@@ -44,7 +44,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
-package-lock.json
+# package-lock.json  # Commented out for Railway deployment
 yarn.lock
 
 # React
